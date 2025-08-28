@@ -1,6 +1,8 @@
-macos
+macos 10.14
 selenium version 4.20.0
 chrome version 116
+RestAssured
+POM framework
 
 properties:
 baseURL
