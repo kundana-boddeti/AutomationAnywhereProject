@@ -125,7 +125,6 @@ public class LandingPageTaskBot extends LandingPage{
 
         boolean creationFlag=false;
         for (WebElement messageBot : createdTasks){
-            System.out.println(messageBot.getAttribute("aria-label"));
             if (messageBot.getAttribute("aria-label").contains(messageBoxName)) {
                 System.out.println("Message box task created");
                 creationFlag=true;

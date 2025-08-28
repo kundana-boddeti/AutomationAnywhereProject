@@ -26,6 +26,7 @@ public class LoginPage {
     }
 
     public void login(String user, String pass) {
+        System.out.println("=====Test started :)=====");
         userNameInput.sendKeys(user);
         passwordInput.sendKeys(pass);
         if(loginButton.isEnabled())

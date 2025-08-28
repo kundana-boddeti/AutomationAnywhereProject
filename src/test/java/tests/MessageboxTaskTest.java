@@ -9,15 +9,14 @@ import pages.LoginPage;
 
 public class MessageboxTaskTest extends BaseTest {
 
-    @Ignore
     @Test
     private void testMessageBoxTask(){
 
         try {
-
-
             LandingPageTaskBot landingPagetaskBot = new LandingPageTaskBot(driver);
             Assert.assertEquals(landingPagetaskBot.verifyMessageBoxFunctionality(), true);
+
+            System.out.println("=====Test completed !!!=====");
         }catch(Exception e){
             e.printStackTrace();
             Assert.fail("Test Failed");

@@ -10,6 +10,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
 public class LandingPageFormUpload extends LandingPage{
 
@@ -69,7 +70,7 @@ public class LandingPageFormUpload extends LandingPage{
         PageFactory.initElements(driver,this);
     }
 
-    public boolean verifyFormFunctionality() {
+    public boolean verifyFormFunctionality() throws Exception{
 
         WebDriverWait wait =new WebDriverWait(driver, Duration.ofSeconds(20));
         automationMenu.click();
@@ -97,12 +98,21 @@ public class LandingPageFormUpload extends LandingPage{
         //wait.until(ExpectedConditions.visibilityOf(closeButton));
 
        //drag and drop
-        Actions actions = new Actions(driver);
+        /*Actions actions = new Actions(driver);
         actions.clickAndHold(formselectFileWidget)
-                .moveToElement(contentArea)
+                .moveToElement(contentArea,formselectFileWidget,)
                 .release()
                 .build()
-                .perform();
+                .perform();*/
+        simulateDragAndDrop(driver,formselectFileWidget,contentArea);
+
+
+
+        js.executeScript("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", formtextBoxWidget);
+
+        simulateDragAndDrop(driver,formtextBoxWidget,contentArea);
+
+        Thread.sleep(10*1000);
 
 
         //tried these options to get the second web element to the content, but didnt help
@@ -121,12 +131,12 @@ public class LandingPageFormUpload extends LandingPage{
 
         closeButton.click();
 
+        driver.switchTo().defaultContent();
 
         wait.until(ExpectedConditions.visibilityOfAllElements(createdTasks));
 
         boolean creationFlag=false;
         for (WebElement messageBot : createdTasks){
-            System.out.println(messageBot.getAttribute("aria-label"));
             if (messageBot.getAttribute("aria-label").contains(formNameExpected)) {
                 System.out.println("Form with text and file upload task created");
                 creationFlag=true;
@@ -135,4 +145,44 @@ public class LandingPageFormUpload extends LandingPage{
         }
         return creationFlag;
     }
+
+    public void simulateDragAndDrop(WebDriver driver, WebElement source, WebElement target) {
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+
+        String script = """
+        var source = arguments[0];
+        var target = arguments[1];
+        var dataTransfer = {
+            dropEffect: '',
+            effectAllowed: 'all',
+            files: [],
+            items: {},
+            types: [],
+            setData: function(format, data) {
+                this.items[format] = data;
+                this.types.push(format);
+            },
+            getData: function(format) {
+                return this.items[format];
+            },
+            clearData: function(format) {}
+        };
+
+        var emit = function(eventType, element) {
+            var event = document.createEvent('Event');
+            event.initEvent(eventType, true, false);
+            event.dataTransfer = dataTransfer;
+            element.dispatchEvent(event);
+        };
+
+        emit('dragstart', source);
+        emit('dragenter', target);
+        emit('dragover', target);
+        emit('drop', target);
+        emit('dragend', source);
+    """;
+
+        js.executeScript(script, source, target);
+    }
+
 }
